@@ -1,0 +1,70 @@
+[
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "ffmpeg/ffmpeg.c"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "file": "ffmpeg/ffmpeg.c"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "opencv/opencv.cpp"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "file": "opencv/opencv.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "main.cpp"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "file": "main.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "lcd/lcd.c"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "file": "lcd/lcd.c"
+    }
+]

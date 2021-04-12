@@ -1,0 +1,14 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 57.83.100
+Requires: 
+Requires.private: libavcodec >= 57.107.100, libswresample >= 2.9.100, libavutil >= 55.78.100
+Conflicts:
+Libs: -L${libdir}  -lavformat 
+Libs.private: -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lfontconfig -lfreetype -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lSDL2 -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lrtmp -lz -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lbluray -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lssl -lcrypto -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lSDL2 -lasound -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lSDL2 -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lssl -lcrypto -lwavpack -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lvorbisenc -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lvorbis -ltheoraenc -ltheoradec -logg -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lspeex -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lrtmp -lz -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lopus -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lopus -lopenjp2 -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lopenh264 -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lfreetype -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lfontconfig -lfreetype -L/home/lalala/linux/ebf_6ull_buildroot_qt/output/host/bin/../arm-buildroot-linux-gnueabihf/sysroot/usr/lib -lbluray -lm -ldl -llzma -lbz2 -lz -pthread -pthread -latomic
+Cflags: -I${includedir}
