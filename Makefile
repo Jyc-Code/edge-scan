@@ -5,7 +5,7 @@ CROSS_COMPILE =/usr/local/arm/arm-gcc-v5.3.1/bin/arm-linux-gnueabihf-
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 
-TARGET = camera_test  #目标变量
+TARGET = edge-scan  #目标变量
 
 CFLAGS = -g -Wall
 
