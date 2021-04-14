@@ -42,5 +42,5 @@ $(OBJS): $(SRC)
 
 .PHONY: clean
 clean:
-	rm *.o camera_test
+	rm *.o $(TARGET)
 
