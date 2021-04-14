@@ -11,40 +11,6 @@
             "-I./ffmpeg",
             "-I./opencv",
             "-I./lib",
-            "ffmpeg/ffmpeg.c"
-        ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
-        "file": "ffmpeg/ffmpeg.c"
-    },
-    {
-        "arguments": [
-            "c++",
-            "-c",
-            "-g",
-            "-Wall",
-            "-I.",
-            "-I./include",
-            "-I./lcd",
-            "-I./ffmpeg",
-            "-I./opencv",
-            "-I./lib",
-            "opencv/opencv.cpp"
-        ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
-        "file": "opencv/opencv.cpp"
-    },
-    {
-        "arguments": [
-            "c++",
-            "-c",
-            "-g",
-            "-Wall",
-            "-I.",
-            "-I./include",
-            "-I./lcd",
-            "-I./ffmpeg",
-            "-I./opencv",
-            "-I./lib",
             "main.cpp"
         ],
         "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
@@ -66,5 +32,39 @@
         ],
         "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
         "file": "lcd/lcd.c"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "ffmpeg/ffmpeg.c"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
+        "file": "ffmpeg/ffmpeg.c"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-g",
+            "-Wall",
+            "-I.",
+            "-I./include",
+            "-I./lcd",
+            "-I./ffmpeg",
+            "-I./opencv",
+            "-I./lib",
+            "opencv/opencv.cpp"
+        ],
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
+        "file": "opencv/opencv.cpp"
     }
 ]

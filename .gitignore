@@ -1,2 +1,4 @@
 *.o
 .clangd/
+.cache/
+edge-scan

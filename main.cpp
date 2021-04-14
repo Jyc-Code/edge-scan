@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	
 	while (1) {
 		sYuv = v4l2_get();
-        opencvEdge(gEdge_Type, sYuv);
+        opencvEdge(gEdge_Type, (unsigned char *)sYuv);
 	}
 	
 	v4l2_close();
