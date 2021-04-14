@@ -3,16 +3,18 @@
 #include "ffmpeg.h"
 #include "opencv.hpp"
 
+EDGE_TYPE gEdge_Type = UNKNOW;
+
 int main(int argc, char *argv[])
 {
-	struct buffer *yuv = NULL;
+    sBUFFER *sYuv = NULL;
 
 	v4l2_init();
 	lcd_init();
 	
 	while (1) {
-		yuv = v4l2_get();
-		CannyEdgeByYUVV((unsigned char *)yuv->start);
+		sYuv = v4l2_get();
+        opencvEdge(gEdge_Type, sYuv);
 	}
 	
 	v4l2_close();

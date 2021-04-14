@@ -1,12 +1,12 @@
 #ifndef _LCD_H
 #define _LCD_H
 
-typedef struct {
+typedef struct rgb32 {
     unsigned char b;
     unsigned char g;
     unsigned char r;
 	unsigned char a;
-}rgb32, frame_rgb32;
+}sFRAME_RGB32;
 
 #ifdef __cplusplus
 extern "C" {

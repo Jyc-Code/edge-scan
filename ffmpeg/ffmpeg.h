@@ -1,10 +1,10 @@
 #ifndef _FFMPEG_H
 #define _FFMPEG_H
 
-struct buffer {
+typedef struct buffer {
     void* start;
     unsigned int length;
-};
+}sBUFFER;
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,9 +16,8 @@ extern "C" {
 #include <libavutil/frame.h>
 
 void v4l2_init(void);
-void saveBmp(unsigned char *ch);
 void v4l2_close(void);
-struct buffer* v4l2_get(void);
+sBUFFER* v4l2_get(void);
 AVFrame* yuvv_2_rgb24_ffmpeg(unsigned char *pointer);
 void resolutionChange(unsigned char *pointer, int row, int cols);
 

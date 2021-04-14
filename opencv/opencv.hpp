@@ -1,6 +1,13 @@
 #ifndef _OPENCV_HPP
 #define _OPENCV_HPP
 
+typedef enum {
+    UNKNOW = 0,
+    CANNY = 1,
+    SOBLE = 2,
+    LAPLACIAN = 3,
+}EDGE_TYPE;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,8 +19,7 @@ extern "C" {
 }
 #endif
 
-void CannyEdge(AVFrame *iAvFrame);
-void CannyEdgeByYUVV(unsigned char *input);
+void opencvEdge(EDGE_TYPE sEdgeType, unsigned char * pYuyvData);
 
 #endif
 

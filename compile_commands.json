@@ -13,7 +13,7 @@
             "-I./lib",
             "ffmpeg/ffmpeg.c"
         ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
         "file": "ffmpeg/ffmpeg.c"
     },
     {
@@ -30,7 +30,7 @@
             "-I./lib",
             "opencv/opencv.cpp"
         ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
         "file": "opencv/opencv.cpp"
     },
     {
@@ -47,7 +47,7 @@
             "-I./lib",
             "main.cpp"
         ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
         "file": "main.cpp"
     },
     {
@@ -64,7 +64,7 @@
             "-I./lib",
             "lcd/lcd.c"
         ],
-        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/camera-or-image",
+        "directory": "/home/lalala/linux/imx6ull/Linux_Drivers/dts/edge-scan",
         "file": "lcd/lcd.c"
     }
 ]

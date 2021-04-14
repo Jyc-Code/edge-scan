@@ -40,6 +40,11 @@ $(TARGET): $(OBJS)
 $(OBJS): $(SRC)
 	$(CXX) $(CFLAGS) -I. -I./include -I./lcd -I./ffmpeg -I./opencv -I./lib -c $^
 
+Info:
+$(info "INCLUDE:$(INCLUDE)")
+$(info "SRC:$(SRC)")
+$(info "OBJS:$(OBJS)")
+
 .PHONY: clean
 clean:
 	rm *.o $(TARGET)
