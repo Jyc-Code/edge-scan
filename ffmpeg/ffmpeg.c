@@ -12,11 +12,14 @@
 #include <poll.h>
 #include <sys/select.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "print.h"
 #include "lcd.h"
 #include "ffmpeg.h"
 #define DEV_PATH "/dev/video1"
+
+extern pthread_mutex_t gGetYuyvMutex;
 
 int fp = 0;
 unsigned int i;
@@ -88,7 +91,7 @@ void v4l2_init(void)
     }
 #ifdef DEBUG
     DEBUG("type:%d\r\n", format.type);
-    DEBUG("pixelformat:%c%c%c%c\r\n", format.fmt.pix.pixelformat & 0xff);
+    /* DEBUG("pixelformat:%c%c%c%c\r\n", format.fmt.pix.pixelformat & 0xff); */
     DEBUG("height:%d\r\n", format.fmt.pix.height);
     DEBUG("width:%d\r\n", format.fmt.pix.width);
     DEBUG("field:%d\r\n", format.fmt.pix.field);
@@ -144,6 +147,9 @@ sBUFFER* v4l2_get(void)
 {
     struct v4l2_buffer buf;
     sBUFFER* buffer_get = NULL;
+
+    pthread_mutex_lock(&gGetYuyvMutex);
+    
     memset(&buf, 0, sizeof(buf));
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
@@ -158,6 +164,8 @@ sBUFFER* v4l2_get(void)
         ERR("error to put quene\r\n");
         exit(-1);
     }
+
+    pthread_mutex_unlock(&gGetYuyvMutex);
     return buffer_get;
 }
 

@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include <pthread.h>
 #include <unistd.h>
 
 #include "lcd.h"
 #include "opencv.hpp"
 
+extern pthread_mutex_t gGetYuyvMutex;
 static cv::Mat sYUYV2BGR32_Opencv(unsigned char *pYuyvData);
 
 using namespace cv;
@@ -48,7 +49,10 @@ void opencvEdge(EDGE_TYPE sEdgeType, unsigned char * pYuyvData)
     Mat dst, edge, gray;
     sFRAME_RGB32 *temp = (sFRAME_RGB32 *)malloc(rgbImg.rows * rgbImg.cols);
     
+    pthread_mutex_lock(&gGetYuyvMutex);
     rgbImg = sYUYV2BGR32_Opencv(pYuyvData);
+    pthread_mutex_unlock(&gGetYuyvMutex);
+
     cvtColor(rgbImg, gray, COLOR_BGRA2GRAY);
     dst.create(rgbImg.size(), rgbImg.type());
     dst = Scalar::all(0);
