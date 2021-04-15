@@ -8,14 +8,14 @@
 #include "opencv.hpp"
 
 extern pthread_mutex_t gGetYuyvMutex;
-static cv::Mat sYUYV2BGR32_Opencv(unsigned char *pYuyvData);
+static cv::Mat sYUYV2BGR32(unsigned char *pYuyvData);
 
 using namespace cv;
 /**
  * Mat类的data属性是一个uchar的指针
  * */
 
-static cv::Mat sYUYV2BGR32_Opencv(unsigned char *pYuyvData)
+static cv::Mat sYUYV2BGR32(unsigned char *pYuyvData)
 {
     /* opencv Mat (cols, rows) */
     Mat yuvImg(480, 640, CV_8UC2);

@@ -184,14 +184,17 @@ AVFrame* yuvv_2_rgb24_ffmpeg(unsigned char *pointer)
   
     Input_pFrame = av_frame_alloc();
     Output_pFrame = av_frame_alloc();
+    
+    /* Input_pFrame.data[0]= */
 
-    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 
     avpicture_fill((AVPicture*)Output_pFrame, (uint8_t const *)fbp, AV_PIX_FMT_RGB32, 800, img_h);
     avpicture_fill((AVPicture*)Input_pFrame, pointer, AV_PIX_FMT_YUYV422, img_x, img_h);
+    
+    DEBUG("InPut->linesize:%d\n Output->linesize:%d\n",Input_pFrame->linesize,Output_pFrame->linesize);
 
     sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, img_h, Output_pFrame->data, Output_pFrame->linesize);
-	/*saveBmp(fbp);*/
 
 	/*memcpy(fbp, rgb, 800*480*4);*/
 
