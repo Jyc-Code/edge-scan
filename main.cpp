@@ -16,12 +16,12 @@ pthread_mutex_t gGetYuyvMutex = PTHREAD_MUTEX_INITIALIZER;
 EDGE_TYPE gEdge_Type = UNKNOW;
 sBUFFER *gsYuv = NULL;
 
-extern void showT(unsigned char u8mode, const char *ch);
+extern void showT(uint8_t u8mode, const char *ch);
 /*
  *  用于获取代码段执行时间
  *  mode 0 开始 1 结束
  */
-void showT(unsigned char u8mode, const char *ch)
+void showT(uint8_t u8mode, const char *ch)
 {
     static struct timeval sFirst_time;
     static struct timeval sLast_time;
@@ -58,7 +58,7 @@ void *pthread_OpencvTask(void *ptr)
     while(1)
     {
         showT(0, "opencv");
-        opencvEdge(gEdge_Type, (unsigned char *)gsYuv);
+        opencvEdge(gEdge_Type, (uint8_t *)gsYuv);
         showT(1, "opencv");
         usleep(10);
     }

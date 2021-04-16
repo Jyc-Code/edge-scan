@@ -171,45 +171,39 @@ sBUFFER* v4l2_get(void)
 
 extern void* fbp;
 
-/*unsigned char *rgb;*/
 AVFrame *Input_pFrame;
 AVFrame *Output_pFrame;
 struct SwsContext *img_ctx = NULL;
-/* and display */
-AVFrame* yuvv_2_rgb24_ffmpeg(unsigned char *pointer)
+uint8_t* yuyv2rgb24_ffmpeg(uint8_t *pointer)
 {
-    /*rgb = (unsigned char *)malloc(800*480*4);*/
+    uint8_t *rgb = (uint8_t *)malloc(640*480*4);
     int img_x = 640;
     int img_h = 480;
   
     Input_pFrame = av_frame_alloc();
     Output_pFrame = av_frame_alloc();
     
-    /* Input_pFrame.data[0]= */
-
-    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
-
-    avpicture_fill((AVPicture*)Output_pFrame, (uint8_t const *)fbp, AV_PIX_FMT_RGB32, 800, img_h);
-    avpicture_fill((AVPicture*)Input_pFrame, pointer, AV_PIX_FMT_YUYV422, img_x, img_h);
+    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
     
-    DEBUG("InPut->linesize:%d\n Output->linesize:%d\n",Input_pFrame->linesize,Output_pFrame->linesize);
+    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, rgb, AV_PIX_FMT_BGR32, img_x, img_h, 1);
+    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_YUYV422, img_x, img_h, 1);
+    
+    DEBUG("InPut->linesize:%d\n Output->linesize:%d\n",*(Input_pFrame->linesize),*(Output_pFrame->linesize));
 
     sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, img_h, Output_pFrame->data, Output_pFrame->linesize);
 
-	/*memcpy(fbp, rgb, 800*480*4);*/
-
-    return Output_pFrame;
+    return (uint8_t *)Output_pFrame->data;
 }
 
-void resolutionChange(unsigned char *pointer, int row, int cols)
+void resolutionChange(uint8_t *pointer, int row, int cols)
 {
     Input_pFrame = av_frame_alloc();
     Output_pFrame = av_frame_alloc();
 
     img_ctx = sws_getContext(row, cols, AV_PIX_FMT_RGB32, row, cols, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 
-    avpicture_fill((AVPicture*)Output_pFrame, (uint8_t const *)fbp, AV_PIX_FMT_RGB32, 800, 480);
-    avpicture_fill((AVPicture*)Input_pFrame, pointer, AV_PIX_FMT_RGB32, row, cols);
+    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_RGB32, row, cols, 1);
 
     sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, cols, Output_pFrame->data, Output_pFrame->linesize);
 }

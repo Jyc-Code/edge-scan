@@ -1,11 +1,6 @@
 #ifndef _FFMPEG_H
 #define _FFMPEG_H
 
-typedef struct buffer {
-    void* start;
-    unsigned int length;
-}sBUFFER;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,12 +9,18 @@ extern "C" {
 #include <libswscale/swscale.h>
 #include <libavutil/pixfmt.h>
 #include <libavutil/frame.h>
+#include <libavutil/imgutils.h>
+
+typedef struct buffer {
+    void* start;
+    uint8_t length;
+}sBUFFER;
 
 void v4l2_init(void);
 void v4l2_close(void);
 sBUFFER* v4l2_get(void);
-AVFrame* yuvv_2_rgb24_ffmpeg(unsigned char *pointer);
-void resolutionChange(unsigned char *pointer, int row, int cols);
+uint8_t* yuyv2rgb24_ffmpeg(uint8_t *pointer);
+void resolutionChange(uint8_t *pointer, int row, int cols);
 
 #ifdef __cplusplus
 }
