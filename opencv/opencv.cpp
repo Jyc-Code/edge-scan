@@ -12,15 +12,14 @@ extern pthread_mutex_t gGetYuyvMutex;
 static cv::Mat sYUYV2BGR32(uint8_t *pYuyvData);
 
 using namespace cv;
-/**
- * Mat类的data属性是一个uchar的指针
- * */
 
 static cv::Mat sYUYV2BGR32(uint8_t *pYuyvData)
 {
     /* opencv Mat (cols, rows) */
     Mat dstImg(480, 640, CV_8UC4);
     
+    dstImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+#if 0
     //转成多通道BGR
     uint8_t *ch = yuyv2rgb24_ffmpeg(pYuyvData);
     Mat_<Vec4b>::iterator it = dstImg.begin<Vec4b>();
@@ -42,6 +41,7 @@ static cv::Mat sYUYV2BGR32(uint8_t *pYuyvData)
         (*it)[3] = (uint8_t)(*(ch + 3));
         ch += 4;
     }
+#endif
     return dstImg;
 }
 

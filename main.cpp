@@ -16,6 +16,9 @@ pthread_mutex_t gGetYuyvMutex = PTHREAD_MUTEX_INITIALIZER;
 EDGE_TYPE gEdge_Type = UNKNOW;
 sBUFFER *gsYuv = NULL;
 
+uint8_t *rgb;
+AVFrame *Input_pFrame;
+AVFrame *Output_pFrame;
 extern void showT(uint8_t u8mode, const char *ch);
 /*
  *  用于获取代码段执行时间
@@ -66,11 +69,20 @@ void *pthread_OpencvTask(void *ptr)
     return 0;
 }
 
+void dataInit(void)
+{
+    Input_pFrame = av_frame_alloc();
+    Output_pFrame = av_frame_alloc();
+
+    rgb = (uint8_t *)malloc(640*480*4);
+}
+
 int main(int argc, char *argv[])
 {
 	v4l2_init();
 	lcd_init();
-	
+	dataInit();
+    
     if(pthread_create(&gGetYuyvPid, NULL, pthread_GetYuyvTask, NULL) != 0)
     {
         ERR("pthread_create pthread_GetYuyvTask failed! \n");
