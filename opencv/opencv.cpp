@@ -16,9 +16,10 @@ using namespace cv;
 static cv::Mat sYUYV2BGR32(uint8_t *pYuyvData)
 {
     /* opencv Mat (cols, rows) */
-    Mat dstImg(480, 640, CV_8UC4);
+    Mat dstImg(480, 640, CV_8UC3);
     
-    dstImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+    // dstImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+    memcpy(dstImg.data, yuyv2rgb24_ffmpeg(pYuyvData), 640*480*3);
 #if 0
     //转成多通道BGR
     uint8_t *ch = yuyv2rgb24_ffmpeg(pYuyvData);
