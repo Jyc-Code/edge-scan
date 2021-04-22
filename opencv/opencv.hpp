@@ -1,12 +1,9 @@
 #ifndef _OPENCV_HPP
 #define _OPENCV_HPP
 
-typedef enum {
-    UNKNOW = 0,
-    CANNY = 1,
-    SOBLE = 2,
-    LAPLACIAN = 3,
-}EDGE_TYPE;
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core/mat.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +16,15 @@ extern "C" {
 }
 #endif
 
-void opencvEdge(EDGE_TYPE sEdgeType, unsigned char * pYuyvData);
+typedef enum {
+    UNKNOW = 0,
+    CANNY = 1,
+    SOBLE = 2,
+    LAPLACIAN = 3,
+}EDGE_TYPE;
+
+cv::Mat sYUYV2BGR32(uint8_t *pYuyvData);
+void opencvEdge(EDGE_TYPE sEdgeType, cv::Mat bgrImg);
 
 #endif
 
