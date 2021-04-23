@@ -16,9 +16,9 @@ INCLUDE := $(patsubst %,-I%,$(ALLDIRS))
 #$(info "INCLUDE:$(INCLUDE)")
 #	获取SRC_PATH目录及子目录获取其中的.c文件
 SRC = $(foreach dir,$(ALLDIRS),$(wildcard $(dir)/*.c)) $(foreach dir,$(ALLDIRS),$(wildcard $(dir)/*.cpp))
-$(info "SRC:$(SRC)")
+# $(info "SRC:$(SRC)")
 OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC)))
-$(info "OBJS:$(OBJS)")
+# $(info "OBJS:$(OBJS)")
 OBJS_WITHOUT_PATH = $(notdir $(OBJS))
 #$(info "OBJS_WITHOUT_PATH:$(OBJS_WITHOUT_PATH)")
 
