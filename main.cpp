@@ -18,7 +18,6 @@ pthread_mutex_t gGetYuyvMutex = PTHREAD_MUTEX_INITIALIZER;
 EDGE_TYPE gEdge_Type = UNKNOW;
 sBUFFER *gsYuv = NULL;
 
-Mat bgrImg(480, 640, CV_8UC3);
 uint8_t *rgb;
 AVFrame *Input_pFrame;
 AVFrame *Output_pFrame;
@@ -51,7 +50,6 @@ void *pthread_GetYuyvTask(void *ptr)
     while(1)
     {
         gsYuv = v4l2_get();
-        bgrImg = sYUYV2BGR32((uint8_t *)gsYuv->start);
         usleep(5);
     }
     return 0;
@@ -62,7 +60,7 @@ void *pthread_OpencvTask(void *ptr)
     while(1)
     {
         if(gsYuv != NULL)
-            opencvEdge(gEdge_Type, bgrImg);
+            opencvEdge(gEdge_Type, (uint8_t *)gsYuv->start);
         usleep(10);
     }
 
@@ -75,7 +73,7 @@ void dataInit(void)
     Output_pFrame = av_frame_alloc();
 
     rgb = (uint8_t *)malloc(640*480*3);
-    bgrImg = Scalar::all(0);
+    // bgrImg = Scalar::all(0);
 }
 
 int main(int argc, char *argv[])

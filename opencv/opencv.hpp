@@ -24,7 +24,7 @@ typedef enum {
 }EDGE_TYPE;
 
 cv::Mat sYUYV2BGR32(uint8_t *pYuyvData);
-void opencvEdge(EDGE_TYPE sEdgeType, cv::Mat bgrImg);
+void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData);
 
 #endif
 

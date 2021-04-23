@@ -14,11 +14,13 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+#include "opencv.hpp"
 #include "print.h"
 #include "lcd.h"
 #include "ffmpeg.h"
 #define DEV_PATH "/dev/video1"
 
+extern EDGE_TYPE gEdge_Type;
 extern uint8_t *rgb;
 extern void* fbp;
 extern AVFrame *Input_pFrame;
@@ -187,14 +189,34 @@ uint8_t* yuyv2rgb24_ffmpeg(uint8_t *pointer)
 
 void resolutionChange(uint8_t *pointer, int cols, int row)
 {
-    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_BGR24, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
-
-    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
-    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_BGR24, cols, row, 1);
-
-    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+    switch(gEdge_Type)
+    {
+        case UNKNOW :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_YUYV422, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_YUYV422, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case CANNY :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_BGR24, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_BGR24, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case SOBLE :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_GRAY8, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_GRAY8, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case LAPLACIAN :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_GRAY8, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_GRAY8, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+    }
 }
-
 void v4l2_close(void)
 {
     enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
