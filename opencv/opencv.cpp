@@ -1,88 +1,66 @@
 #include <stdio.h>
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
+#include <pthread.h>
 #include <unistd.h>
 
+#include "ffmpeg.h"
 #include "lcd.h"
 #include "opencv.hpp"
-
-static cv::Mat sYUYV2BGR32_Opencv(unsigned char *pYuyvData);
+#include "opencv2/imgproc.hpp"
 
 using namespace cv;
-/**
- * Mat类的data属性是一个uchar的指针
- * */
 
-static cv::Mat sYUYV2BGR32_Opencv(unsigned char *pYuyvData)
+cv::Mat sYUYV2BGR32(uint8_t *pYuyvData)
 {
     /* opencv Mat (cols, rows) */
-    Mat yuvImg(480, 640, CV_8UC2);
-    Mat srcRgbImg(480, 640, CV_8UC4);
-    Mat dstImg(480, 640, CV_8UC4);
-
-    memcpy(yuvImg.data, pYuyvData, 640*480*2);
-    cvtColor(yuvImg, srcRgbImg, CV_YUV2BGRA_YUYV);
+    Mat dstImg(480, 640, CV_8UC3);
     
-    //转成多通道BGR
-    unsigned char *ch = srcRgbImg.data;
-    
-    for (int j = 0; j < 480; j++) {
-        for (int i = 0;i < 640; i++) {
-            // if (i > 640 && *(ch))
-            dstImg.at<Vec4b>(j,i)[0] = (unsigned char)(*(ch));
-            dstImg.at<Vec4b>(j,i)[1] = (unsigned char)(*(ch + 1));
-            dstImg.at<Vec4b>(j,i)[2] = (unsigned char)(*(ch + 2));
-            dstImg.at<Vec4b>(j,i)[3] = (unsigned char)(*(ch + 3));
-
-            ch += 4;
-        }
-    }
-
+    dstImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
     return dstImg;
 }
 
-void opencvEdge(EDGE_TYPE sEdgeType, unsigned char * pYuyvData)
+void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData)
 {   
-    Mat rgbImg(480, 640,CV_8UC4);
-    Mat dst, edge, gray;
-    sFRAME_RGB32 *temp = (sFRAME_RGB32 *)malloc(rgbImg.rows * rgbImg.cols);
-    
-    rgbImg = sYUYV2BGR32_Opencv(pYuyvData);
-    cvtColor(rgbImg, gray, COLOR_BGRA2GRAY);
-    dst.create(rgbImg.size(), rgbImg.type());
+    Mat bgrImg(480, 640, CV_8UC3);
+    Mat dst, edge, gray, grad_x, grad_y;
+
+    dst.create(bgrImg.size(), bgrImg.type());
     dst = Scalar::all(0);
 
     switch(sEdgeType) 
     {
         case UNKNOW :
+                    resolutionChange(pYuyvData, 640, 480);
                     break;
         case CANNY :
+                    // DEBUG("CANNY\n");
+                    bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+                    cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
                     blur(gray, edge, Size(3, 3));
                     Canny(edge, edge, 3, 9, 3);
-                    rgbImg.copyTo(dst, edge);
+                    bgrImg.copyTo(dst, edge);
+                    resolutionChange(dst.data, 640, 480);
                     break;
         case SOBLE :
+                    // DEBUG("SOBLE\n");
+                    bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+                    GaussianBlur(bgrImg, bgrImg, Size(3, 3), 0);
+                    cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
+                    Sobel(gray, grad_x, CV_16S, 1, 0, 3, 1, 1,BORDER_DEFAULT);
+                    convertScaleAbs(grad_x, grad_x);
+                    Sobel(gray, grad_y, CV_16S, 0, 1, 3, 1, 1,BORDER_DEFAULT);
+                    convertScaleAbs(grad_y, grad_y);
+                    addWeighted(grad_x, 0.5, grad_y, 0.5, 0, dst);
+                    resolutionChange(dst.data, 640, 480);
                     break;
         case LAPLACIAN :
-                    // GaussianBlur()
-                    Laplacian(gray, dst, CV_16S, 3, 1, 0, BORDER_DEFAULT);
-                    convertScaleAbs(dst, edge);
+                    // DEBUG("LAPLACIAN\n");
+                    bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
+                    cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
+                    Laplacian(gray, edge, CV_16S, 3, 1, 0, BORDER_DEFAULT);
+                    convertScaleAbs(edge, dst);
+                    resolutionChange(dst.data, 640, 480);
                     break;
 
         default:break;
     }
-    //重新转换成单通道RGBA的格式
-    for (int i = 0,j = 0;i < 640*480;i++) 
-    {
-        j = i/640;
-        temp[i].b = (unsigned char)dst.at<Vec4b>(j,i%640)[0];
-        temp[i].g = (unsigned char)dst.at<Vec4b>(j,i%640)[1];
-        temp[i].r = (unsigned char)dst.at<Vec4b>(j,i%640)[2];
-        temp[i].a = (unsigned char)dst.at<Vec4b>(j,i%640)[3];
-        // temp[i].a = 0;
-    }
-
-    resolutionChange((unsigned char *)temp, 640, 480);
-    free(temp);
 }

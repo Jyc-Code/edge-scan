@@ -12,11 +12,20 @@
 #include <poll.h>
 #include <sys/select.h>
 #include <sys/time.h>
+#include <pthread.h>
 
+#include "opencv.hpp"
 #include "print.h"
 #include "lcd.h"
 #include "ffmpeg.h"
 #define DEV_PATH "/dev/video1"
+
+extern EDGE_TYPE gEdge_Type;
+extern uint8_t *rgb;
+extern void* fbp;
+extern AVFrame *Input_pFrame;
+extern AVFrame *Output_pFrame;
+struct SwsContext *img_ctx = NULL;
 
 int fp = 0;
 unsigned int i;
@@ -88,7 +97,7 @@ void v4l2_init(void)
     }
 #ifdef DEBUG
     DEBUG("type:%d\r\n", format.type);
-    DEBUG("pixelformat:%c%c%c%c\r\n", format.fmt.pix.pixelformat & 0xff);
+    /* DEBUG("pixelformat:%c%c%c%c\r\n", format.fmt.pix.pixelformat & 0xff); */
     DEBUG("height:%d\r\n", format.fmt.pix.height);
     DEBUG("width:%d\r\n", format.fmt.pix.width);
     DEBUG("field:%d\r\n", format.fmt.pix.field);
@@ -137,13 +146,14 @@ void v4l2_init(void)
     if (ioctl(fp, VIDIOC_STREAMON, &type) == -1) {
             ERR("error to start!\r\n");
             exit(-1);
-    } else ERR("start!\r\n");
+    } else DEBUG("start!\r\n");
 }
 
 sBUFFER* v4l2_get(void)
 {
     struct v4l2_buffer buf;
     sBUFFER* buffer_get = NULL;
+
     memset(&buf, 0, sizeof(buf));
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
@@ -158,51 +168,55 @@ sBUFFER* v4l2_get(void)
         ERR("error to put quene\r\n");
         exit(-1);
     }
+
     return buffer_get;
 }
 
-extern void* fbp;
-
-/*unsigned char *rgb;*/
-AVFrame *Input_pFrame;
-AVFrame *Output_pFrame;
-struct SwsContext *img_ctx = NULL;
-/* and display */
-AVFrame* yuvv_2_rgb24_ffmpeg(unsigned char *pointer)
+uint8_t* yuyv2rgb24_ffmpeg(uint8_t *pointer)
 {
-    /*rgb = (unsigned char *)malloc(800*480*4);*/
     int img_x = 640;
     int img_h = 480;
   
-    Input_pFrame = av_frame_alloc();
-    Output_pFrame = av_frame_alloc();
-
-    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
-
-    avpicture_fill((AVPicture*)Output_pFrame, (uint8_t const *)fbp, AV_PIX_FMT_RGB32, 800, img_h);
-    avpicture_fill((AVPicture*)Input_pFrame, pointer, AV_PIX_FMT_YUYV422, img_x, img_h);
-
+    img_ctx = sws_getContext(img_x, img_h, AV_PIX_FMT_YUYV422, img_x, img_h, AV_PIX_FMT_BGR24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+    
+    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, rgb, AV_PIX_FMT_BGR24, img_x, img_h, 1);
+    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_YUYV422, img_x, img_h, 1);
+    
     sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, img_h, Output_pFrame->data, Output_pFrame->linesize);
-	/*saveBmp(fbp);*/
 
-	/*memcpy(fbp, rgb, 800*480*4);*/
-
-    return Output_pFrame;
+    return (uint8_t *)Output_pFrame->data[0];
 }
 
-void resolutionChange(unsigned char *pointer, int row, int cols)
+void resolutionChange(uint8_t *pointer, int cols, int row)
 {
-    Input_pFrame = av_frame_alloc();
-    Output_pFrame = av_frame_alloc();
-
-    img_ctx = sws_getContext(row, cols, AV_PIX_FMT_RGB32, row, cols, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
-
-    avpicture_fill((AVPicture*)Output_pFrame, (uint8_t const *)fbp, AV_PIX_FMT_RGB32, 800, 480);
-    avpicture_fill((AVPicture*)Input_pFrame, pointer, AV_PIX_FMT_RGB32, row, cols);
-
-    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, cols, Output_pFrame->data, Output_pFrame->linesize);
+    switch(gEdge_Type)
+    {
+        case UNKNOW :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_YUYV422, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_YUYV422, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case CANNY :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_BGR24, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_BGR24, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case SOBLE :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_GRAY8, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_GRAY8, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+        case LAPLACIAN :
+                    img_ctx = sws_getContext(cols, row, AV_PIX_FMT_GRAY8, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+                    av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
+                    av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_GRAY8, cols, row, 1);
+                    sws_scale(img_ctx, Input_pFrame->data, Input_pFrame->linesize, 0, row, Output_pFrame->data, Output_pFrame->linesize);
+                    break;
+    }
 }
-
 void v4l2_close(void)
 {
     enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -224,7 +238,7 @@ void v4l2_close(void)
         }
     }
 
-    /*if(rgb)free(rgb);*/
+    if(rgb)free(rgb);
     if(Input_pFrame)av_free(Input_pFrame);
     if(Output_pFrame)av_free(Output_pFrame);
     if(img_ctx)sws_freeContext(img_ctx);
