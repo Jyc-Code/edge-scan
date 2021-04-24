@@ -39,13 +39,13 @@ $(TARGET): $(OBJS)
 	$(CXX) -o $@ $(OBJS_WITHOUT_PATH) $(LIBS_PATH) $(LIBS)
 $(OBJS): $(SRC)
 	$(CXX) $(CFLAGS) -I. -I./include -I./lcd -I./ffmpeg -I./opencv -I./lib -c $^
-
+# echo "cp $(TARGET) --> /home/lalala/share"
+# $(cp) $(TARGET) /home/lalala/share
+.PHONY: clean Info
 Info:
-$(info "INCLUDE:$(INCLUDE)")
-$(info "SRC:$(SRC)")
-$(info "OBJS:$(OBJS)")
-
-.PHONY: clean
+	$(info "INCLUDE:$(INCLUDE)")
+	$(info "SRC:$(SRC)")
+	$(info "OBJS:$(OBJS)")
 clean:
 	rm *.o $(TARGET)
 

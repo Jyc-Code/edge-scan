@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+#include "print.h"
 #include "lcd.h"
 #include "ffmpeg.h"
 

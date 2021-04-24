@@ -20,12 +20,11 @@ cv::Mat sYUYV2BGR32(uint8_t *pYuyvData)
 
 void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData)
 {   
-    Mat dst, edge, gray, grad_x, grad_y, bgrImg;
+    Mat bgrImg(480, 640, CV_8UC3);
+    Mat dst, edge, gray, grad_x, grad_y;
 
-    /*
-     * dst.create(bgrImg.size(), bgrImg.type());
-     * dst = Scalar::all(0);
-     */
+    dst.create(bgrImg.size(), bgrImg.type());
+    dst = Scalar::all(0);
 
     switch(sEdgeType) 
     {
@@ -33,6 +32,7 @@ void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData)
                     resolutionChange(pYuyvData, 640, 480);
                     break;
         case CANNY :
+                    DEBUG("CANNY\n");
                     bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
                     cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
                     blur(gray, edge, Size(3, 3));
@@ -41,6 +41,7 @@ void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData)
                     resolutionChange(dst.data, 640, 480);
                     break;
         case SOBLE :
+                    DEBUG("SOBLE\n");
                     bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
                     GaussianBlur(bgrImg, bgrImg, Size(3, 3), 0);
                     cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
@@ -52,6 +53,7 @@ void opencvEdge(EDGE_TYPE sEdgeType, uint8_t *pYuyvData)
                     resolutionChange(dst.data, 640, 480);
                     break;
         case LAPLACIAN :
+                    DEBUG("LAPLACIAN\n");
                     bgrImg.data = yuyv2rgb24_ffmpeg(pYuyvData);
                     cvtColor(bgrImg, gray, COLOR_BGR2GRAY);
                     Laplacian(gray, edge, CV_16S, 3, 1, 0, BORDER_DEFAULT);

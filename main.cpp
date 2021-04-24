@@ -74,6 +74,7 @@ void dataInit(void)
 
     rgb = (uint8_t *)malloc(640*480*3);
     // bgrImg = Scalar::all(0);
+    gEdge_Type = SOBLE;
 }
 
 int main(int argc, char *argv[])
