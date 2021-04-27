@@ -20,6 +20,7 @@
 #include "ffmpeg.h"
 #define DEV_PATH "/dev/video1"
 
+extern uint8_t gChangeFlag;
 extern EDGE_TYPE gEdge_Type;
 extern uint8_t *rgb;
 extern void* fbp;
@@ -192,6 +193,10 @@ void resolutionChange(uint8_t *pointer, int cols, int row)
     switch(gEdge_Type)
     {
         case UNKNOW :
+                    if(gChangeFlag)
+                    {
+                        gChangeFlag = 0;
+                    }
                     img_ctx = sws_getContext(cols, row, AV_PIX_FMT_YUYV422, 800, 480, AV_PIX_FMT_RGB32, SWS_FAST_BILINEAR, NULL, NULL, NULL);
                     av_image_fill_arrays(Output_pFrame->data, Output_pFrame->linesize, (const uint8_t *)fbp, AV_PIX_FMT_RGB32, 800, 480, 1);
                     av_image_fill_arrays(Input_pFrame->data, Input_pFrame->linesize, pointer, AV_PIX_FMT_YUYV422, cols, row, 1);
